@@ -528,6 +528,10 @@ while running:
         text = font.render(f"Game Over", True, BLACK)
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(text, text_rect)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_q]:
+            running = False
+            pygame.quit()
 
     if paused:
         keys = pygame.key.get_pressed()
