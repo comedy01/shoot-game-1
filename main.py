@@ -162,7 +162,6 @@ def calculate_distance(point1, point2):
 def find_closest_enemy(turret, enemies):
     min_distance = float('inf')
     closest_enemy = None
-
     for enemy in enemies:
         enemy_center = (enemy[0] + 15, enemy[1] + 15)
         turret_center = (turret.col * CELL_SIZE + CELL_SIZE // 2, turret.row * CELL_SIZE + CELL_SIZE // 2)
@@ -306,20 +305,12 @@ while running:
                     original_bullet_delay -= 2.5
                     fire_upgrades -= 1
                     rate_of_fire_button_text = rate_of_fire_button_font.render(f"Increase Rate of Fire ({fire_upgrade_cost} coins), {fire_upgrades} left", True, RED)
-                    print(f"original bullet delay is {original_bullet_delay}")
-
-                elif fire_upgrades == 0:
-                    print("No more upgrades left")
-
-                else:
-                    print("Not enough coins")
 
             elif dual_shoot_button_rect.collidepoint(event.pos) and dual_shoot_upgrades > 0 and coin_count >= dual_shoot_cost:
                 coin_count -= dual_shoot_cost
                 dual_shoot_upgrades -= 1
                 dual_shoot_enabled = True
                 dual_shoot_button_text = dual_shoot_button_font.render(f"Dual Shoot ({dual_shoot_cost} coins), {dual_shoot_upgrades} left", True, RED)
-                print("Dual shooting enabled")
 
             elif quad_shoot_button_rect.collidepoint(event.pos) and quad_shoot_upgrades > 0 and coin_count >= quad_shoot_cost:
                 coin_count -= quad_shoot_cost
@@ -327,14 +318,12 @@ while running:
                 dual_shoot_enabled = False
                 quad_shoot_enabled = True
                 quad_shoot_button_text = dual_shoot_button_font.render(f"Quad Shoot ({quad_shoot_cost} coins), {quad_shoot_upgrades} left", True, RED)
-                print("Dual shooting enabled")
 
             elif bullet_speed_rect.collidepoint(event.pos) and coin_count >= bullet_speed_cost and bullet_speed_upgrades > 0:
                 coin_count -= 4
                 bullet_speed_upgrades -= 1
                 BULLET_SPEED += 300
                 bullet_speed_text = turret_button_font.render(f"Bullet Speed ({bullet_speed_cost} coins), {bullet_speed_upgrades} left", True, RED)
-                print("Bullet speed increased by 100")
 
             elif movement_speed_button_rect.collidepoint(event.pos) and coin_count >= movement_speed_cost and movement_speed_upgrades > 0:
                 PLAYER_SPEED = PLAYER_SPEED * 1.2
@@ -355,8 +344,6 @@ while running:
                     turret_count -= 1
                     has_turret = True
                     turret_button_text = turret_button_font.render(f"Turrets ({turret_cost} coins), {turret_count} left", True, RED)
-                else:
-                    print("Cannot place a turret in the same location or not enough coins")
 
     bullet_key = pygame.key.get_pressed()
     if bullet_key[pygame.K_SPACE] and bullet_delay <= 0:
@@ -460,15 +447,11 @@ while running:
             spawn_enemy()
             cls_amount += 4
             score_increment += 0.1
-            print(f"cleared screen of enemies, you got a coin\n enemy spawn rate is {ENEMY_SPAWN_DELAY}")
-        if ENEMY_SPAWN_DELAY <= 8:
-            print("max spawn rate reached")
 
         if enemies_killed >= enemies_killed_threshold <= 80:
             enemies_killed_threshold += 3
             coin_count += 1
             enemies_killed = 0
-            print(f"you got a coin, enemy kill threshold is {enemies_killed_threshold}")
 
         elif enemies_killed >= enemies_killed_threshold >= 80:
             enemies_killed = 0
