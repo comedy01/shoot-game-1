@@ -203,6 +203,8 @@ while splashScreenTimer < 4:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_SPACE]:
         splashScreenTimer = 4
+    if keys[pygame.K_q]:
+        pygame.quit()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -508,6 +510,7 @@ while running:
         text = font.render(f"Game Over", True, BLACK)
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(text, text_rect)
+
 
     coin_font = pygame.font.Font(None, 36)
     coin_text = coin_font.render(f"Coins: {coin_count-1}", True, RED)
