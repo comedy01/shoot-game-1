@@ -20,11 +20,11 @@ quad_shoot_upgrades = 1
 quad_shoot_cost = 12
 fire_upgrade_cost = 4
 dual_shoot_cost = 10
-turret_cost = 12
+turret_cost = 10
 GRID_SIZE = 6
 CELL_SIZE = SCREEN_WIDTH // GRID_SIZE
 TURRET_SIZE = 20
-turret_fire_delay= 26
+turret_fire_delay = 26
 angle = 0
 cls_amount = 0
 turret_count = 36
@@ -426,6 +426,8 @@ while running:
                 player_x += PLAYER_SPEED * dt
                 if player_x > SCREEN_WIDTH - PLAYER_SIZE:
                     player_x = SCREEN_WIDTH - PLAYER_SIZE
+            if keys[pygame.K_q]:
+                pygame.quit()
 
         spawn_delay -= 1
         if spawn_delay <= 0:
