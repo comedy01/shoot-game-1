@@ -433,7 +433,7 @@ while running:
             spawn_delay = ENEMY_SPAWN_DELAY
 
         if len(enemies) == 0 and ENEMY_SPAWN_DELAY >= 8:
-            ENEMY_SPAWN_DELAY -= 3.5
+            ENEMY_SPAWN_DELAY -= 3
             coin_count += 1
             spawn_enemy()
             cls_amount += 4
