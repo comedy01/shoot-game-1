@@ -59,7 +59,7 @@ score_increment = 1
 spawn_delay = 0
 original_bullet_delay = 12
 bullet_delay = original_bullet_delay
-coin_count = 1
+coin_count = 12
 upgrade_menu_active = False
 paused = False
 dual_shoot_enabled = False
@@ -511,9 +511,8 @@ while running:
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(text, text_rect)
 
-
     coin_font = pygame.font.Font(None, 36)
-    coin_text = coin_font.render(f"Coins: {coin_count-1}", True, RED)
+    coin_text = coin_font.render(f"Coins: {coin_count}", True, RED)
     coin_rect = coin_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
 
     screen.blit(coin_text, coin_rect)
