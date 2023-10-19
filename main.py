@@ -221,7 +221,7 @@ while splashScreenTimer < 4:
     screen.blit(startMessage, (screen.get_width() / 2 - startMessage.get_width() / 2, screen.get_height() / 2 - startMessage.get_height() / 2-40))
     startingIn = font.render(f"Starting in {start_time}", True, (48, 93, 120))
     screen.blit(startingIn, (screen.get_width() / 2 - startingIn.get_width() / 2, screen.get_height() / 2 - startingIn.get_height() / 2))
-    skip_to_start = font.render("press SPACE to skip timer", True, (48, 93, 120))
+    skip_to_start = font.render("press space to skip timer", True, (48, 93, 120))
     screen.blit(skip_to_start, (screen.get_width() / 2 - skip_to_start.get_width() / 2, screen.get_height() / 2 - skip_to_start.get_height() / 2+40))
     pygame.display.update()
     pygame.time.delay(60)
@@ -460,7 +460,7 @@ while running:
             spawn_enemy()
             cls_amount += 4
             score_increment += 0.1
-            print(f"cleared screen of enemies, you got a coin\n enemy spawnrate is {ENEMY_SPAWN_DELAY}")
+            print(f"cleared screen of enemies, you got a coin\n enemy spawn rate is {ENEMY_SPAWN_DELAY}")
         if ENEMY_SPAWN_DELAY <= 8:
             print("max spawn rate reached")
 
