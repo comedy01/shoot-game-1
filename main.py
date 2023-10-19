@@ -464,11 +464,15 @@ while running:
         if ENEMY_SPAWN_DELAY <= 8:
             print("max spawn rate reached")
 
-        if enemies_killed >= enemies_killed_threshold:
-            enemies_killed_threshold += 5
+        if enemies_killed >= enemies_killed_threshold <= 80:
+            enemies_killed_threshold += 3
             coin_count += 1
             enemies_killed = 0
             print(f"you got a coin, enemy kill threshold is {enemies_killed_threshold}")
+
+        elif enemies_killed >= enemies_killed_threshold >= 80:
+            enemies_killed = 0
+            coin_count += 1
 
         for enemy in enemies:
             if player_x < enemy[0] + 30 and player_x + PLAYER_SIZE > enemy[0] and player_y < enemy[1] + 30 and player_y + PLAYER_SIZE > enemy[1]:
@@ -524,6 +528,12 @@ while running:
         text = font.render(f"Game Over", True, BLACK)
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(text, text_rect)
+
+    if paused:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_q]:
+            running = False
+            pygame.quit()
 
     coin_font = pygame.font.Font(None, 36)
     coin_text = coin_font.render(f"Coins: {coin_count}", True, RED)
