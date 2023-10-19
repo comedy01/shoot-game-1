@@ -200,6 +200,9 @@ while splashScreenTimer < 4:
     dt = clock.tick(60) / 1000
     splashScreenTimer += dt
     start_time = round(5 - splashScreenTimer)
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_SPACE]:
+        splashScreenTimer = 4
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -207,9 +210,11 @@ while splashScreenTimer < 4:
 
     screen.fill((0, 255, 255))
     startMessage = font.render("CREATED BY COMEDY", True, (48, 93, 120))
-    screen.blit(startMessage, (screen.get_width() / 2 - startMessage.get_width() / 2, screen.get_height() / 2 - startMessage.get_height() / 2-50))
+    screen.blit(startMessage, (screen.get_width() / 2 - startMessage.get_width() / 2, screen.get_height() / 2 - startMessage.get_height() / 2-40))
     startingIn = font.render(f"Starting in {start_time}", True, (48, 93, 120))
     screen.blit(startingIn, (screen.get_width() / 2 - startingIn.get_width() / 2, screen.get_height() / 2 - startingIn.get_height() / 2))
+    skip_to_start = font.render("press SPACE to skip timer", True, (48, 93, 120))
+    screen.blit(skip_to_start, (screen.get_width() / 2 - skip_to_start.get_width() / 2, screen.get_height() / 2 - skip_to_start.get_height() / 2+40))
     pygame.display.update()
     pygame.time.delay(60)
 
