@@ -10,6 +10,9 @@ screen_width, screen_height = 800, 800
 player_size = 27
 player_speed = 150
 
+player_health = 100
+ENEMY_DAMAGE = 50
+
 bullet_speed = 900
 bullet_speed_cost = 1
 bullet_speed_upgrades = 6
@@ -68,8 +71,8 @@ coin_count = 0
 coin_delay = 1000
 
 bullets = []
-enemies = []
 turrets = []
+enemies = []
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -144,6 +147,11 @@ turret_fire_button_rect = turret_fire_button_text.get_rect(center=(screen_width 
 movement_speed_button_font = pygame.font.Font(None, 30)
 movement_speed_button_text = movement_speed_button_font.render(f"Increase movement speed ({movement_speed_cost} coins), {movement_speed_upgrades} left", True, RED)
 movement_speed_button_rect = movement_speed_button_text.get_rect(center=(screen_width // 2, 380))
+
+
+def draw_player_health_bar():
+    pygame.draw.rect(screen, RED, (screen_width // 2 - player_health // 2, 30, player_health, 20))
+
 
 class Turret:
     def __init__(self, row, col):
@@ -448,6 +456,9 @@ while running:
                 running = False
                 pygame.quit()
 
+        if player_health <= 0:
+            game_over = True
+
         spawn_delay -= 1
         if spawn_delay <= 0:
             spawn_enemy()
@@ -464,7 +475,8 @@ while running:
 
         for enemy in enemies:
             if player_x < enemy[0] + 30 and player_x + player_size > enemy[0] and player_y < enemy[1] + 30 and player_y + player_size > enemy[1]:
-                game_over = True
+                player_health -= ENEMY_DAMAGE
+                enemies.remove(enemy)
 
     else:
         if paused and not upgrade_menu_active and not turret_placement_mode and not turret_menu:
@@ -520,6 +532,9 @@ while running:
         if keys[pygame.K_q]:
             running = False
             pygame.quit()
+
+    if not paused and not game_over:
+        draw_player_health_bar()
 
     if paused:
         keys = pygame.key.get_pressed()
