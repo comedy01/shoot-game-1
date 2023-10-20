@@ -10,12 +10,18 @@ screen_width, screen_height = 800, 800
 player_size = 27
 player_speed = 150
 
-player_health = 100
-ENEMY_DAMAGE = 50
+green_enemy_damage = 50
 
 bullet_speed = 900
 bullet_speed_cost = 1
 bullet_speed_upgrades = 6
+
+original_player_health = 100
+player_health = original_player_health
+health_upgrades = 6
+health_upgrade_cost = 1
+original_regen_delay = 1000
+health_regen_delay = original_regen_delay
 
 original_bullet_delay = 16
 bullet_delay = original_bullet_delay
@@ -68,7 +74,7 @@ total_enemies_killed = 0
 score = 0
 score_increment = 1
 coin_count = 0
-coin_delay = 1000
+coin_delay = 800
 
 bullets = []
 turrets = []
@@ -117,7 +123,7 @@ upgrades_button_text = upgrades_button_font.render("Upgrades", True, BLACK)
 upgrades_button_rect = upgrades_button_text.get_rect(center=(screen_width // 2, 340))
 
 rate_of_fire_button_font = pygame.font.Font(None, 30)
-rate_of_fire_button_text = rate_of_fire_button_font.render(f"Increase Rate of Fire ({fire_upgrade_cost} coins), {fire_upgrades} left", True, RED)
+rate_of_fire_button_text = rate_of_fire_button_font.render(f"Fire rate ({fire_upgrade_cost} coins), {fire_upgrades} left", True, RED)
 rate_of_fire_button_rect = rate_of_fire_button_text.get_rect(center=(screen_width // 2, 410))
 
 dual_shoot_button_font = pygame.font.Font(None, 30)
@@ -138,15 +144,36 @@ quad_shoot_button_rect = dual_shoot_button_text.get_rect(center=(screen_width //
 
 turret_menu_font = pygame.font.Font(None, 30)
 turret_menu_text = turret_button_font.render(f"Turrets", True, RED)
-turret_menu_rect = turret_button_text.get_rect(center=(screen_width // 2 + 120, 500))
+turret_menu_rect = turret_button_text.get_rect(center=(screen_width // 2 + 120, 560))
 
 turret_fire_button_font = pygame.font.Font(None, 30)
-turret_fire_button_text = turret_fire_button_font.render(f"Increase turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades}left", True, RED)
+turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades}left", True, RED)
 turret_fire_button_rect = turret_fire_button_text.get_rect(center=(screen_width // 2, 410))
 
 movement_speed_button_font = pygame.font.Font(None, 30)
-movement_speed_button_text = movement_speed_button_font.render(f"Increase movement speed ({movement_speed_cost} coins), {movement_speed_upgrades} left", True, RED)
+movement_speed_button_text = movement_speed_button_font.render(f"Movement speed ({movement_speed_cost} coins), {movement_speed_upgrades} left", True, RED)
 movement_speed_button_rect = movement_speed_button_text.get_rect(center=(screen_width // 2, 380))
+
+health_button_font = pygame.font.Font(None, 30)
+health_button_text = health_button_font.render(f"Health ({health_upgrade_cost} coins), {health_upgrades} left", True, RED)
+health_button_rect = health_button_text.get_rect(center=(screen_width // 2, 500))
+
+health_regen_font = pygame.font.Font(None, 30)
+health_regen_text = health_regen_font.render(f"Health Regen ({health_upgrade_cost} coins), {health_upgrades} left", True, RED)
+health_regen_rect = health_regen_text.get_rect(center=(screen_width // 2, 530))
+
+
+def start_screen():
+    screen.fill((0, 255, 255))
+    start_message = font.render("CREATED BY COMEDY", True, (48, 93, 120))
+    screen.blit(start_message, (screen.get_width() / 2 - start_message.get_width() / 2, screen.get_height() / 2 - start_message.get_height() / 2 - 40))
+    starting_in = font.render(f"Starting in {start_time}", True, (48, 93, 120))
+    screen.blit(starting_in, (screen.get_width() / 2 - starting_in.get_width() / 2, screen.get_height() / 2 - starting_in.get_height() / 2))
+    skip_to_start = font.render("press space to skip timer", True, (48, 93, 120))
+    screen.blit(skip_to_start, (screen.get_width() / 2 - skip_to_start.get_width() / 2,
+                                screen.get_height() / 2 - skip_to_start.get_height() / 2 + 40))
+    pygame.display.update()
+    pygame.time.delay(60)
 
 
 def draw_player_health_bar():
@@ -234,15 +261,7 @@ while splashScreenTimer < 4:
         if event.type == pygame.QUIT:
             pygame.quit()
 
-    screen.fill((0, 255, 255))
-    startMessage = font.render("CREATED BY COMEDY", True, (48, 93, 120))
-    screen.blit(startMessage, (screen.get_width() / 2 - startMessage.get_width() / 2, screen.get_height() / 2 - startMessage.get_height() / 2-40))
-    startingIn = font.render(f"Starting in {start_time}", True, (48, 93, 120))
-    screen.blit(startingIn, (screen.get_width() / 2 - startingIn.get_width() / 2, screen.get_height() / 2 - startingIn.get_height() / 2))
-    skip_to_start = font.render("press space to skip timer", True, (48, 93, 120))
-    screen.blit(skip_to_start, (screen.get_width() / 2 - skip_to_start.get_width() / 2, screen.get_height() / 2 - skip_to_start.get_height() / 2+40))
-    pygame.display.update()
-    pygame.time.delay(60)
+    start_screen()
 
 while running:
     dt = clock.tick(60) / 1000
@@ -349,6 +368,18 @@ while running:
                 coin_count -= movement_speed_cost
                 movement_speed_upgrades -= 1
                 movement_speed_button_text = movement_speed_button_font.render(f"Increase movement speed ({movement_speed_cost} coins), {movement_speed_upgrades} left", True, RED)
+
+            elif health_button_rect.collidepoint(event.pos) and coin_count >= health_upgrade_cost and health_upgrades > 0:
+                original_player_health += 35
+                coin_count -= health_upgrade_cost
+                health_upgrades -= 1
+                health_button_text = health_button_font.render(f"Health ({health_upgrade_cost} coins), {health_upgrades} left", True, RED)
+
+            elif health_regen_rect.collidepoint(event.pos) and coin_count >= health_upgrade_cost and health_upgrades > 0:
+                original_regen_delay -= 100
+                coin_count -= health_upgrade_cost
+                health_upgrades -= 1
+                health_regen_text = health_regen_font.render(f"Health Regen ({health_upgrade_cost} coins), {health_upgrades} left", True, RED)
 
         if event.type == pygame.MOUSEBUTTONDOWN and turret_placement_mode and paused and not upgrade_menu_active:
             if not turret_button_rect.collidepoint(event.pos):
@@ -475,8 +506,12 @@ while running:
 
         for enemy in enemies:
             if player_x < enemy[0] + 30 and player_x + player_size > enemy[0] and player_y < enemy[1] + 30 and player_y + player_size > enemy[1]:
-                player_health -= ENEMY_DAMAGE
+                player_health -= green_enemy_damage
                 enemies.remove(enemy)
+
+        if player_health < original_player_health and health_regen_delay <= 0:
+            player_health += 10
+            health_regen_delay = original_regen_delay
 
     else:
         if paused and not upgrade_menu_active and not turret_placement_mode and not turret_menu:
@@ -501,6 +536,8 @@ while running:
             screen.blit(turret_menu_text, turret_menu_rect)
             screen.blit(bullet_speed_text, bullet_speed_rect)
             screen.blit(movement_speed_button_text, movement_speed_button_rect)
+            screen.blit(health_button_text, health_button_rect)
+            screen.blit(health_regen_text, health_regen_rect)
 
         elif turret_menu and paused and not upgrade_menu_active and not turret_placement_mode:
             screen.fill((255, 255, 255))
@@ -551,6 +588,7 @@ while running:
 
     turret_shoot_delay -= 1
     bullet_delay -= 1
+    health_regen_delay -= 1
     pygame.display.update()
 
 pygame.quit()
