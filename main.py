@@ -39,16 +39,14 @@ quad_shoot_upgrades = 1
 quad_shoot_cost = 12
 has_chosen_quad_shoot = False
 
-turret_cost = 10
 turret_size = 20
 turret_fire_delay = 26
-turret_count = 36
-turret_fire_cost = 4
-turret_fire_upgrades = 4
-turret_shoot_delay = turret_fire_delay
+turret_count = 1
+turret_fire_cost = 1
+turret_fire_upgrades = 6
 turret_placement_mode = False
 has_turret = False
-turret_menu = False
+has_chosen_turrets = False
 
 grid_size = 6
 cell_size = screen_width // grid_size
@@ -62,7 +60,6 @@ running = True
 game_over = False
 selected_cell = None
 has_made_decision = False
-has_chosen_turrets = False
 has_chosen_dual_shoot = False
 
 angle = 0
@@ -70,7 +67,7 @@ spawn_delay = 0
 
 green_enemies_killed = 0
 green_enemies_killed_threshold = 7
-total_green_enemies_killed = 500
+total_green_enemies_killed = 0
 
 score = 0
 score_increment = 1
@@ -128,27 +125,28 @@ rate_of_fire_button_text = rate_of_fire_button_font.render(f"Fire rate ({fire_up
 rate_of_fire_button_rect = rate_of_fire_button_text.get_rect(topleft=(20, screen_height - 157))
 
 dual_shoot_button_font = pygame.font.Font(None, 30)
-dual_shoot_button_text = dual_shoot_button_font.render(f"Dual Shoot", True, RED)
+dual_shoot_button_text = dual_shoot_button_font.render(f"Dual Shooter", True, RED)
 dual_shoot_button_rect = dual_shoot_button_text.get_rect(center=(screen_width // 2, 470))
 
-turret_button_font = pygame.font.Font(None, 25)
-turret_button_text = turret_button_font.render(f"Place a turret ({turret_cost} coins), {turret_count} left", True, RED)
-turret_button_rect = turret_button_text.get_rect(center=(screen_width // 2, 380))
+turret_button_font = pygame.font.Font(None, 30)
+turret_placement_mode_text = turret_button_font.render(f"Place a turret", True, RED)
+turret_placement_mode_rect = turret_placement_mode_text.get_rect(center=(screen_width // 2, 500))
 
 bullet_speed_font = pygame.font.Font(None, 25)
-bullet_speed_text = turret_button_font.render(f"Bullet Speed ({bullet_speed_cost} coins), {bullet_speed_upgrades} left", True, RED)
-bullet_speed_rect = turret_button_text.get_rect(topleft=(20, screen_height - 124))
+bullet_speed_text = bullet_speed_font.render(f"Bullet Speed ({bullet_speed_cost} coins), {bullet_speed_upgrades} left", True, RED)
+bullet_speed_rect = bullet_speed_text.get_rect(topleft=(20, screen_height - 124))
 
 quad_shoot_button_font = pygame.font.Font(None, 30)
-quad_shoot_button_text = quad_shoot_button_font.render(f"Quad Shoot", True, RED)
+quad_shoot_button_text = quad_shoot_button_font.render(f"Quad Shooter", True, RED)
 quad_shoot_button_rect = quad_shoot_button_text.get_rect(center=(screen_width // 2, 470))
-turret_menu_font = pygame.font.Font(None, 30)
-turret_menu_text = turret_menu_font.render(f"Turrets", True, RED)
-turret_menu_rect = turret_menu_text.get_rect(center=(screen_width // 2, 500))
+
+turret_gunner_font = pygame.font.Font(None, 30)
+turret_gunner_text = turret_gunner_font.render(f"Turret gunner", True, RED)
+turret_gunner_rect = turret_gunner_text.get_rect(center=(screen_width // 2, 500))
 
 turret_fire_button_font = pygame.font.Font(None, 25)
-turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades}left", True, RED)
-turret_fire_button_rect = turret_fire_button_text.get_rect(center=(screen_width // 2, 500))
+turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
+turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 190))
 
 movement_speed_button_font = pygame.font.Font(None, 25)
 movement_speed_button_text = movement_speed_button_font.render(f"Movement speed ({movement_speed_cost} coins), {movement_speed_upgrades} left", True, RED)
@@ -278,48 +276,38 @@ while running:
                 if not paused:
                     paused = True
 
-                elif upgrade_menu_active and paused:
+                elif upgrade_menu_active:
                     upgrade_menu_active = False
                     turret_placement_mode = False
 
-                elif turret_placement_mode and paused:
+                elif turret_placement_mode:
                     turret_placement_mode = False
-                    upgrade_menu_active = False
-                    turret_menu = True
-
-                elif turret_menu and paused:
-                    turret_menu = False
                     upgrade_menu_active = True
-                    paused = True
+                    has_chosen_turrets = True
 
                 elif paused:
                     paused = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN and turret_menu and paused and not upgrade_menu_active and not turret_placement_mode:
+        if event.type == pygame.MOUSEBUTTONDOWN and has_chosen_turrets:
             if back_button_rect.collidepoint(event.pos):
-                turret_menu = False
                 upgrade_menu_active = True
                 paused = True
 
-            elif turret_button_rect.collidepoint(event.pos):
-                turret_menu = False
+            elif turret_placement_mode_rect.collidepoint(event.pos) and has_chosen_turrets:
                 turret_placement_mode = True
-                paused = True
 
-            elif turret_fire_button_rect.collidepoint(event.pos) and coin_count >= turret_fire_cost and turret_fire_upgrades > 0 and has_turret:
-                turret_menu = True
-                turret_placement_mode = False
-                paused = True
+            elif turret_fire_button_rect.collidepoint(event.pos) and has_turret and turret_fire_upgrades > 0:
                 coin_count -= turret_fire_cost
-                turret_fire_delay -= 7
+                turret_fire_delay -= 2
                 turret_fire_upgrades -= 1
-                turret_fire_button_text = turret_fire_button_font.render(f"Increase turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades}left", True, RED)
+                turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 190))
+                turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
+
             elif resume_button_rect.collidepoint(event.pos):
-                turret_menu = False
                 paused = False
                 upgrade_menu_active = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN and paused and not upgrade_menu_active and not turret_placement_mode and not turret_menu:
+        if event.type == pygame.MOUSEBUTTONDOWN and paused:
             if resume_button_rect.collidepoint(event.pos):
                 paused = not paused
 
@@ -329,8 +317,7 @@ while running:
 
             elif upgrades_button_rect.collidepoint(event.pos) and has_made_decision:
                 if has_chosen_turrets:
-                    turret_menu = True
-                    upgrade_menu_active = False
+                    upgrade_menu_active = True
                 elif has_chosen_dual_shoot:
                     upgrade_menu_active = True
                 elif has_chosen_quad_shoot:
@@ -343,13 +330,12 @@ while running:
 
             elif back_button_rect.collidepoint(event.pos):
                 upgrade_menu_active = False
-                paused = True
 
-            elif turret_menu_rect.collidepoint(event.pos):
-                turret_menu = True
-                has_chosen_turrets = True
+            elif turret_gunner_rect.collidepoint(event.pos) and not has_made_decision and total_green_enemies_killed > 150:
                 upgrade_menu_active = True
-                paused = True
+                has_chosen_turrets = True
+                has_made_decision = True
+                bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(67, screen_height - 223))
 
             elif rate_of_fire_button_rect.collidepoint(event.pos):
                 if fire_upgrades > 0 and coin_count >= fire_upgrade_cost:
@@ -358,13 +344,13 @@ while running:
                     fire_upgrades -= 1
                     rate_of_fire_button_text = rate_of_fire_button_font.render(f"Fire rate ({fire_upgrade_cost} coins), {fire_upgrades} left", True, RED)
 
-            elif dual_shoot_button_rect.collidepoint(event.pos) and not has_made_decision:
+            elif dual_shoot_button_rect.collidepoint(event.pos) and not has_made_decision and total_green_enemies_killed > 150:
                 upgrade_menu_active = True
                 has_made_decision = True
                 has_chosen_dual_shoot = True
                 original_bullet_delay += 3
 
-            elif quad_shoot_button_rect.collidepoint(event.pos) and has_chosen_dual_shoot:
+            elif quad_shoot_button_rect.collidepoint(event.pos) and has_chosen_dual_shoot and total_green_enemies_killed > 400:
                 upgrade_menu_active = True
                 has_chosen_quad_shoot = True
                 has_chosen_dual_shoot = False
@@ -374,7 +360,7 @@ while running:
                 coin_count -= bullet_speed_cost
                 bullet_speed_upgrades -= 1
                 bullet_speed += 100
-                bullet_speed_text = turret_button_font.render(f"Bullet Speed ({bullet_speed_cost} coins), {bullet_speed_upgrades} left", True, RED)
+                bullet_speed_text = bullet_speed_font.render(f"Bullet Speed ({bullet_speed_cost} coins), {bullet_speed_upgrades} left", True, RED)
 
             elif movement_speed_button_rect.collidepoint(event.pos) and coin_count >= movement_speed_cost and movement_speed_upgrades > 0:
                 player_speed = player_speed * 1.05
@@ -394,19 +380,17 @@ while running:
                 health_regen_upgrades -= 1
                 health_regen_text = health_regen_font.render(f"Health Regen ({health_regen_upgrade_cost} coins), {health_regen_upgrades} left", True, RED)
 
-        if event.type == pygame.MOUSEBUTTONDOWN and turret_placement_mode and paused and not upgrade_menu_active:
-            if not turret_button_rect.collidepoint(event.pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and turret_placement_mode and has_chosen_turrets and upgrade_menu_active:
+            if not turret_placement_mode_rect.collidepoint(event.pos):
                 row = event.pos[1] // cell_size
                 col = event.pos[0] // cell_size
 
-                if (row, col) not in [(turret.row, turret.col) for turret in turrets] and coin_count >= turret_cost and turret_count > 0:
+                if (row, col) not in [(turret.row, turret.col) for turret in turrets] and turret_count >= 1:
                     place_turret(row, col)
                     new_turret = Turret(row, col)
                     turrets.append(new_turret)
-                    coin_count -= turret_cost
                     turret_count -= 1
                     has_turret = True
-                    turret_button_text = turret_button_font.render(f"Turrets ({turret_cost} coins), {turret_count} left", True, RED)
 
     bullet_key = pygame.key.get_pressed()
     if bullet_key[pygame.K_SPACE] and bullet_delay <= 0:
@@ -528,13 +512,19 @@ while running:
             health_regen_delay = original_regen_delay
 
     else:
-        if paused and not upgrade_menu_active and not turret_placement_mode and not turret_menu:
+        if paused and not upgrade_menu_active:
             screen.fill((255, 255, 255))
             screen.blit(pause_text, pause_rect)
             screen.blit(resume_button_text, resume_button_rect)
             screen.blit(upgrades_button_text, upgrades_button_rect)
 
-        elif upgrade_menu_active and paused and not turret_menu and not has_made_decision and total_green_enemies_killed > 150:
+        elif upgrade_menu_active and not has_made_decision and total_green_enemies_killed < 150:
+            screen.fill((255, 255, 255))
+            screen.blit(back_button_text, back_button_rect)
+            screen.blit(resume_button_text, resume_button_rect)
+            screen.blit(pause_text, pause_rect)
+
+        elif upgrade_menu_active and not has_made_decision and total_green_enemies_killed > 150:
             screen.fill((255, 255, 255))
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
@@ -543,21 +533,16 @@ while running:
                 screen.blit(dual_shoot_button_text, dual_shoot_button_rect)
             elif has_chosen_dual_shoot:
                 screen.blit(quad_shoot_button_text, quad_shoot_button_rect)
-            screen.blit(turret_menu_text, turret_menu_rect)
-            screen.blit(turret_menu_text, turret_menu_rect)
-
-        elif upgrade_menu_active and paused and not turret_menu and not has_made_decision and total_green_enemies_killed < 150:
-            screen.fill((255, 255, 255))
-            screen.blit(back_button_text, back_button_rect)
-            screen.blit(resume_button_text, resume_button_rect)
-            screen.blit(pause_text, pause_rect)
+            elif not has_chosen_turrets:
+                screen.blit(turret_gunner_text, turret_gunner_rect)
+            screen.blit(turret_gunner_text, turret_gunner_rect)
 
         elif has_chosen_turrets and upgrade_menu_active:
             screen.fill((255, 255, 255))
             screen.blit(pause_text, pause_rect)
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
-            screen.blit(turret_button_text, turret_button_rect)
+            screen.blit(turret_placement_mode_text, turret_placement_mode_rect)
             screen.blit(turret_fire_button_text, turret_fire_button_rect)
 
         elif has_chosen_dual_shoot and upgrade_menu_active:
@@ -573,26 +558,24 @@ while running:
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
 
-        elif turret_placement_mode and paused and not upgrade_menu_active and not turret_menu:
-            screen.fill((255, 255, 255))
-            draw_grid()
-
-            for turret in turrets:
-                turret_x = turret.col * cell_size + cell_size // 2
-                turret_y = turret.row * cell_size + cell_size // 2
-                screen.blit(turret_img, (turret_x - turret_size // 2-11, turret_y - turret_size // 2-9))
-
-            placement_message = font.render("Click on a grid cell to place a turret.", True, BLACK)
-            placement_rect = placement_message.get_rect(center=(screen_width // 2, 70))
-            screen.blit(placement_message, placement_rect)
-
-        if upgrade_menu_active or turret_menu:
-            screen.blit(bullet_speed_text, bullet_speed_rect)
-            screen.blit(movement_speed_button_text, movement_speed_button_rect)
-            screen.blit(health_button_text, health_button_rect)
-            screen.blit(health_regen_text, health_regen_rect)
-            screen.blit(bottom_left_upgrades_text, bottom_left_upgrades_rect)
-            screen.blit(rate_of_fire_button_text, rate_of_fire_button_rect)
+        if upgrade_menu_active:
+            if not turret_placement_mode:
+                screen.blit(bullet_speed_text, bullet_speed_rect)
+                screen.blit(movement_speed_button_text, movement_speed_button_rect)
+                screen.blit(health_button_text, health_button_rect)
+                screen.blit(health_regen_text, health_regen_rect)
+                screen.blit(bottom_left_upgrades_text, bottom_left_upgrades_rect)
+                screen.blit(rate_of_fire_button_text, rate_of_fire_button_rect)
+            else:
+                screen.fill(WHITE)
+                placement_message = font.render("Click on a grid cell to place a turret.", True, BLACK)
+                placement_rect = placement_message.get_rect(center=(screen_width // 2, 70))
+                screen.blit(placement_message, placement_rect)
+                draw_grid()
+                for turret in turrets:
+                    turret_x = turret.col * cell_size + cell_size // 2
+                    turret_y = turret.row * cell_size + cell_size // 2
+                    screen.blit(turret_img, (turret_x - turret_size // 2 - 11, turret_y - turret_size // 2 - 9))
 
     if game_over:
         screen.fill(WHITE)
@@ -601,7 +584,7 @@ while running:
         screen.blit(text, text_rect)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_q]:
-            running = Falsetermin
+            running = False
             pygame.quit()
 
     if not paused and not game_over:
@@ -620,7 +603,6 @@ while running:
     screen.blit(coin_text, coin_rect)
     display_score(int(score))
 
-    turret_shoot_delay -= 1
     bullet_delay -= 1
     health_regen_delay -= 1
     pygame.display.update()
