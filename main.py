@@ -102,74 +102,73 @@ player_y = screen_height // 2 - player_size // 2
 
 clock = pygame.time.Clock()
 turret_img = pygame.image.load(os.path.join("Assets", "turret.png"))
-
-font = pygame.font.Font(None, 32)
+font = pygame.font.Font('Assets/Montserrat-Bold.ttf', 32)
 font_color = (255, 255, 255)
 font_position = (10, 10)
 
-pause_font = pygame.font.Font(None, 48)
+pause_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  48)
 pause_text = pause_font.render("Paused", True, BLACK)
 pause_rect = pause_text.get_rect(center=(screen_width // 2, 25))
 
-back_button_font = pygame.font.Font(None, 32)
+back_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  32)
 back_button_text = pause_font.render("Back", True, BLACK)
 back_button_rect = pause_text.get_rect(center=(screen_width // 2 + 20, 260))
 
-resume_button_font = pygame.font.Font(None, 36)
+resume_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  36)
 resume_button_text = resume_button_font.render("Resume", True, BLACK)
-resume_button_rect = resume_button_text.get_rect(center=(screen_width // 2, 300))
+resume_button_rect = resume_button_text.get_rect(center=(screen_width // 2 - 10, 300))
 
-upgrades_button_font = pygame.font.Font(None, 36)
+upgrades_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  36)
 upgrades_button_text = upgrades_button_font.render("Upgrades", True, BLACK)
-upgrades_button_rect = upgrades_button_text.get_rect(center=(screen_width // 2, 340))
+upgrades_button_rect = upgrades_button_text.get_rect(center=(screen_width // 2 - 10, 340))
 
-rate_of_fire_button_font = pygame.font.Font(None, 25)
+rate_of_fire_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 rate_of_fire_button_text = rate_of_fire_button_font.render(f"Fire rate ({fire_upgrade_cost} coins), {fire_upgrades} left", True, RED)
-rate_of_fire_button_rect = rate_of_fire_button_text.get_rect(topleft=(20, screen_height - 157))
+rate_of_fire_button_rect = rate_of_fire_button_text.get_rect(topleft=(20, screen_height - 172))
 
-dual_shoot_button_font = pygame.font.Font(None, 30)
+dual_shoot_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
 dual_shoot_button_text = dual_shoot_button_font.render(f"Dual Shooter", True, RED)
 dual_shoot_button_rect = dual_shoot_button_text.get_rect(center=(screen_width // 2, 470))
 
-turret_button_font = pygame.font.Font(None, 30)
+turret_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
 turret_placement_mode_text = turret_button_font.render(f"Place a turret", True, RED)
 turret_placement_mode_rect = turret_placement_mode_text.get_rect(center=(screen_width // 2, 500))
 
-bullet_speed_font = pygame.font.Font(None, 25)
+bullet_speed_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 bullet_speed_text = bullet_speed_font.render(f"Bullet Speed ({bullet_speed_cost} coins), {bullet_speed_upgrades} left", True, RED)
-bullet_speed_rect = bullet_speed_text.get_rect(topleft=(20, screen_height - 124))
+bullet_speed_rect = bullet_speed_text.get_rect(topleft=(20, screen_height - 139))
 
-quad_shoot_button_font = pygame.font.Font(None, 30)
+quad_shoot_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
 quad_shoot_button_text = quad_shoot_button_font.render(f"Quad Shooter", True, RED)
 quad_shoot_button_rect = quad_shoot_button_text.get_rect(center=(screen_width // 2, 470))
 
-turret_gunner_font = pygame.font.Font(None, 30)
+turret_gunner_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
 turret_gunner_text = turret_gunner_font.render(f"Turret gunner", True, RED)
 turret_gunner_rect = turret_gunner_text.get_rect(center=(screen_width // 2, 500))
 
-turret_fire_button_font = pygame.font.Font(None, 25)
+turret_fire_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
-turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 223))
+turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 238))
 
-movement_speed_button_font = pygame.font.Font(None, 25)
+movement_speed_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 movement_speed_button_text = movement_speed_button_font.render(f"Movement speed ({movement_speed_cost} coins), {movement_speed_upgrades} left", True, RED)
-movement_speed_button_rect = movement_speed_button_text.get_rect(topleft=(20, screen_height - 91))
+movement_speed_button_rect = movement_speed_button_text.get_rect(topleft=(20, screen_height - 106))
 
-health_button_font = pygame.font.Font(None, 25)
+health_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 health_button_text = health_button_font.render(f"Health ({health_upgrade_cost} coins), {health_upgrades} left", True, RED)
-health_button_rect = health_button_text.get_rect(topleft=(20, screen_height - 58))
+health_button_rect = health_button_text.get_rect(topleft=(20, screen_height - 73))
 
-health_regen_font = pygame.font.Font(None, 25)
+health_regen_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 health_regen_text = health_regen_font.render(f"Health Regen ({health_regen_upgrade_cost} coins), {health_regen_upgrades} left", True, RED)
-health_regen_rect = health_regen_text.get_rect(topleft=(20, screen_height - 30))
+health_regen_rect = health_regen_text.get_rect(topleft=(20, screen_height - 45))
 
-bottom_left_upgrades_font = pygame.font.Font(None, 32)
+bottom_left_upgrades_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  32)
 bottom_left_upgrades_text = bottom_left_upgrades_font.render(f"Upgrades", True, RED)
-bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(67, screen_height - 223))
+bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(97, screen_height - 238))
 
-bullet_penetration_font = pygame.font.Font(None, 25)
+bullet_penetration_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 bullet_penetration_text = bullet_penetration_font.render(f"Bullet penetration ({bullet_penetration_cost} coins), 1 left", True, RED)
-bullet_penetration_rect = bullet_penetration_text.get_rect(topleft=(20, screen_height - 190))
+bullet_penetration_rect = bullet_penetration_text.get_rect(topleft=(20, screen_height - 205))
 
 
 def start_screen():
@@ -381,9 +380,9 @@ while running:
                 health_upgrades -= 1
                 health_button_text = health_button_font.render(f"Health ({health_upgrade_cost} coins), {health_upgrades} left", True, RED)
 
-            elif health_regen_rect.collidepoint(event.pos) and coin_count >= health_upgrade_cost and health_upgrades > 0:
+            elif health_regen_rect.collidepoint(event.pos) and coin_count >= health_regen_upgrade_cost and health_regen_upgrades > 0:
                 original_regen_delay -= 100
-                coin_count -= health_upgrade_cost
+                coin_count -= health_regen_upgrade_cost
                 health_regen_upgrades -= 1
                 health_regen_text = health_regen_font.render(f"Health Regen ({health_regen_upgrade_cost} coins), {health_regen_upgrades} left", True, RED)
 
@@ -612,7 +611,7 @@ while running:
             running = False
             pygame.quit()
 
-    coin_font = pygame.font.Font(None, 36)
+    coin_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  36)
     coin_text = coin_font.render(f"Coins: {coin_count}", True, RED)
     coin_rect = coin_text.get_rect(topright=(screen_width - 10, 10))
 
