@@ -48,6 +48,8 @@ turret_placement_mode = False
 has_turret = False
 has_chosen_turrets = False
 
+bullet_penetration_cost = 5
+
 grid_size = 6
 cell_size = screen_width // grid_size
 
@@ -61,6 +63,7 @@ game_over = False
 selected_cell = None
 has_made_decision = False
 has_chosen_dual_shoot = False
+has_bullet_penetration = False
 
 angle = 0
 spawn_delay = 0
@@ -146,7 +149,7 @@ turret_gunner_rect = turret_gunner_text.get_rect(center=(screen_width // 2, 500)
 
 turret_fire_button_font = pygame.font.Font(None, 25)
 turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
-turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 190))
+turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 223))
 
 movement_speed_button_font = pygame.font.Font(None, 25)
 movement_speed_button_text = movement_speed_button_font.render(f"Movement speed ({movement_speed_cost} coins), {movement_speed_upgrades} left", True, RED)
@@ -162,7 +165,11 @@ health_regen_rect = health_regen_text.get_rect(topleft=(20, screen_height - 30))
 
 bottom_left_upgrades_font = pygame.font.Font(None, 32)
 bottom_left_upgrades_text = bottom_left_upgrades_font.render(f"Upgrades", True, RED)
-bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(67, screen_height - 190))
+bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(67, screen_height - 223))
+
+bullet_penetration_font = pygame.font.Font(None, 25)
+bullet_penetration_text = bullet_penetration_font.render(f"Bullet penetration ({bullet_penetration_cost} coins), 1 left", True, RED)
+bullet_penetration_rect = bullet_penetration_text.get_rect(topleft=(20, screen_height - 190))
 
 
 def start_screen():
@@ -300,7 +307,7 @@ while running:
                 coin_count -= turret_fire_cost
                 turret_fire_delay -= 2
                 turret_fire_upgrades -= 1
-                turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 190))
+                turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 223))
                 turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
 
             elif resume_button_rect.collidepoint(event.pos):
@@ -335,7 +342,7 @@ while running:
                 upgrade_menu_active = True
                 has_chosen_turrets = True
                 has_made_decision = True
-                bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(67, screen_height - 223))
+                bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(67, screen_height - 256))
 
             elif rate_of_fire_button_rect.collidepoint(event.pos):
                 if fire_upgrades > 0 and coin_count >= fire_upgrade_cost:
@@ -379,6 +386,12 @@ while running:
                 coin_count -= health_upgrade_cost
                 health_regen_upgrades -= 1
                 health_regen_text = health_regen_font.render(f"Health Regen ({health_regen_upgrade_cost} coins), {health_regen_upgrades} left", True, RED)
+
+            elif bullet_penetration_rect.collidepoint(event.pos) and coin_count >= bullet_penetration_cost and has_bullet_penetration == False:
+                coin_count -= bullet_penetration_cost
+                has_bullet_penetration = True
+                bullet_penetration_text = bullet_penetration_font.render(
+                    f"Bullet penetration ({bullet_penetration_cost} coins), 0 left", True, RED)
 
         if event.type == pygame.MOUSEBUTTONDOWN and turret_placement_mode and has_chosen_turrets and upgrade_menu_active:
             if not turret_placement_mode_rect.collidepoint(event.pos):
@@ -461,6 +474,8 @@ while running:
                     score += score_increment
                     green_enemies_killed += 1
                     total_green_enemies_killed += 1
+                    if not has_bullet_penetration:
+                        bullets.remove(bullet)
 
         if not game_over and not paused and not upgrade_menu_active:
             keys = pygame.key.get_pressed()
@@ -566,6 +581,7 @@ while running:
                 screen.blit(health_regen_text, health_regen_rect)
                 screen.blit(bottom_left_upgrades_text, bottom_left_upgrades_rect)
                 screen.blit(rate_of_fire_button_text, rate_of_fire_button_rect)
+                screen.blit(bullet_penetration_text, bullet_penetration_rect)
             else:
                 screen.fill(WHITE)
                 placement_message = font.render("Click on a grid cell to place a turret.", True, BLACK)
