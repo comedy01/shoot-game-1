@@ -12,7 +12,7 @@ player_speed = 150
 
 green_enemy_damage = 50
 
-bullet_speed = 900
+bullet_speed = 600
 bullet_speed_cost = 1
 bullet_speed_upgrades = 6
 
@@ -145,6 +145,10 @@ quad_shoot_button_rect = quad_shoot_button_text.get_rect(center=(screen_width //
 turret_gunner_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
 turret_gunner_text = turret_gunner_font.render(f"Turret gunner", True, RED)
 turret_gunner_rect = turret_gunner_text.get_rect(center=(screen_width // 2, 500))
+
+mini_gunner_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
+mini_gunner_text = mini_gunner_font.render(f"Turret gunner", True, RED)
+mini_gunner_rect = mini_gunner_text.get_rect(center=(screen_width // 2, 530))
 
 turret_fire_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
@@ -306,7 +310,7 @@ while running:
                 coin_count -= turret_fire_cost
                 turret_fire_delay -= 2
                 turret_fire_upgrades -= 1
-                turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 223))
+                turret_fire_button_rect = turret_fire_button_text.get_rect(topleft=(20, screen_height - 238))
                 turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
 
             elif resume_button_rect.collidepoint(event.pos):
@@ -341,7 +345,7 @@ while running:
                 upgrade_menu_active = True
                 has_chosen_turrets = True
                 has_made_decision = True
-                bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(67, screen_height - 256))
+                bottom_left_upgrades_rect = bottom_left_upgrades_text.get_rect(center=(97, screen_height - 256))
 
             elif rate_of_fire_button_rect.collidepoint(event.pos):
                 if fire_upgrades > 0 and coin_count >= fire_upgrade_cost:
@@ -545,8 +549,6 @@ while running:
             screen.blit(pause_text, pause_rect)
             if not has_chosen_dual_shoot and not has_chosen_quad_shoot:
                 screen.blit(dual_shoot_button_text, dual_shoot_button_rect)
-            elif has_chosen_dual_shoot:
-                screen.blit(quad_shoot_button_text, quad_shoot_button_rect)
             elif not has_chosen_turrets:
                 screen.blit(turret_gunner_text, turret_gunner_rect)
             screen.blit(turret_gunner_text, turret_gunner_rect)
@@ -559,7 +561,13 @@ while running:
             screen.blit(turret_placement_mode_text, turret_placement_mode_rect)
             screen.blit(turret_fire_button_text, turret_fire_button_rect)
 
-        elif has_chosen_dual_shoot and upgrade_menu_active:
+        elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed < 400:
+            screen.fill((255, 255, 255))
+            screen.blit(pause_text, pause_rect)
+            screen.blit(back_button_text, back_button_rect)
+            screen.blit(resume_button_text, resume_button_rect)
+
+        elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed > 400:
             screen.fill((255, 255, 255))
             screen.blit(pause_text, pause_rect)
             screen.blit(back_button_text, back_button_rect)
