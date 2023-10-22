@@ -11,6 +11,7 @@ player_size = 27
 player_speed = 150
 
 green_enemy_damage = 50
+yellow_enemy_damage = 100
 
 bullet_speed = 600
 bullet_speed_cost = 1
@@ -28,8 +29,10 @@ health_regen_upgrade_cost = 1
 original_bullet_delay = 16
 bullet_delay = original_bullet_delay
 
-enemy_speed = 100
-enemy_spawn_delay = 80
+green_enemy_speed = 100
+yellow_enemy_speed = 120
+green_enemy_spawn_delay= 80
+yellow_enemy_spawn_delay = 50
 enemy_spawn_distance = 250
 
 fire_upgrades = 6
@@ -64,6 +67,8 @@ selected_cell = None
 has_made_decision = False
 has_chosen_dual_shoot = False
 has_bullet_penetration = False
+green_enemy_mode = True
+yellow_enemy_mode = False
 
 angle = 0
 spawn_delay = 0
@@ -71,6 +76,9 @@ spawn_delay = 0
 green_enemies_killed = 0
 green_enemies_killed_threshold = 7
 total_green_enemies_killed = 0
+total_yellow_enemies_killed = 0
+yellow_enemies_killed = 0
+yellow_enemies_killed_threshold = 7
 
 score = 0
 score_increment = 1
@@ -80,9 +88,11 @@ coin_delay = 800
 bullets = []
 turrets = []
 green_enemies = []
+yellow_enemies = []
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+DARK_YELLOW = (105, 105, 30)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 
@@ -242,7 +252,7 @@ def place_turret(row, col):
     turrets.append(Turret(row, col))
 
 
-def spawn_enemy():
+def spawn_green_enemy():
     while True:
         enemy_x = random.randint(0, screen_width - 30)
         enemy_y = random.randint(0, screen_height - 30)
@@ -250,6 +260,17 @@ def spawn_enemy():
         distance = math.sqrt((enemy_x - player_x) ** 2 + (enemy_y - player_y) ** 2)
         if distance >= enemy_spawn_distance:
             green_enemies.append([enemy_x, enemy_y])
+            break
+
+
+def spawn_yellow_enemy():
+    while True:
+        enemy_x = random.randint(0, screen_width - 30)
+        enemy_y = random.randint(0, screen_height - 30)
+
+        distance = math.sqrt((enemy_x - player_x) ** 2 + (enemy_y - player_y) ** 2)
+        if distance >= enemy_spawn_distance:
+            yellow_enemies.append([enemy_x, enemy_y])
             break
 
 
@@ -440,25 +461,47 @@ while running:
 
         bullets = [bullet for bullet in bullets if 0 <= bullet[0] <= screen_width and 0 <= bullet[2] <= screen_height]
 
-        for enemy in green_enemies:
-            enemy_center = (enemy[0] + 15, enemy[1] + 15)
-            player_center = (player_x + player_size // 2, player_y + player_size // 2)
+        if green_enemy_mode:
+            for enemy in green_enemies:
+                enemy_center = (enemy[0] + 15, enemy[1] + 15)
+                player_center = (player_x + player_size // 2, player_y + player_size // 2)
 
-            direction_vector = (player_center[0] - enemy_center[0], player_center[1] - enemy_center[1])
+                direction_vector = (player_center[0] - enemy_center[0], player_center[1] - enemy_center[1])
 
-            vector_length = math.sqrt(direction_vector[0] ** 2 + direction_vector[1] ** 2)
-            if vector_length != 0:
-                direction_vector = (direction_vector[0] / vector_length, direction_vector[1] / vector_length)
+                vector_length = math.sqrt(direction_vector[0] ** 2 + direction_vector[1] ** 2)
+                if vector_length != 0:
+                    direction_vector = (direction_vector[0] / vector_length, direction_vector[1] / vector_length)
 
-            enemy[0] += direction_vector[0] * enemy_speed * dt
-            enemy[1] += direction_vector[1] * enemy_speed * dt
+                enemy[0] += direction_vector[0] * green_enemy_speed * dt
+                enemy[1] += direction_vector[1] * green_enemy_speed * dt
 
-            pygame.draw.ellipse(screen, GREEN, (enemy[0], enemy[1], 30, 30))
+                pygame.draw.ellipse(screen, GREEN, (enemy[0], enemy[1], 35, 35))
+        elif yellow_enemy_mode:
+            for enemy in yellow_enemies:
+                enemy_center = (enemy[0] + 15, enemy[1] + 15)
+                player_center = (player_x + player_size // 2, player_y + player_size // 2)
 
-        for turret in turrets:
-            closest_enemy = find_closest_enemy(turret, green_enemies)
-            turret.update_target(closest_enemy)
-            turret.shoot()
+                direction_vector = (player_center[0] - enemy_center[0], player_center[1] - enemy_center[1])
+
+                vector_length = math.sqrt(direction_vector[0] ** 2 + direction_vector[1] ** 2)
+                if vector_length != 0:
+                    direction_vector = (direction_vector[0] / vector_length, direction_vector[1] / vector_length)
+
+                enemy[0] += direction_vector[0] * yellow_enemy_speed * dt
+                enemy[1] += direction_vector[1] * yellow_enemy_speed * dt
+
+                pygame.draw.ellipse(screen, DARK_YELLOW, (enemy[0], enemy[1], 30, 30))
+
+        if green_enemy_mode:
+            for turret in turrets:
+                closest_enemy = find_closest_enemy(turret, green_enemies)
+                turret.update_target(closest_enemy)
+                turret.shoot()
+        elif yellow_enemy_mode:
+            for turret in turrets:
+                closest_enemy = find_closest_enemy(turret, yellow_enemies)
+                turret.update_target(closest_enemy)
+                turret.shoot()
 
         for turret in turrets:
             turret_x = turret.col * cell_size + cell_size // 2
@@ -468,17 +511,32 @@ while running:
                 turret.shoot_delay -= 1
 
         for bullet in bullets:
-            for enemy in green_enemies:
-                enemy_center = (enemy[0] + 15, enemy[1] + 15)
-                bullet_center = (bullet[0], bullet[2])
-                distance = math.sqrt((bullet_center[0] - enemy_center[0]) ** 2 + (bullet_center[1] - enemy_center[1]) ** 2)
-                if distance < 18:
-                    green_enemies.remove(enemy)
-                    score += score_increment
-                    green_enemies_killed += 1
-                    total_green_enemies_killed += 1
-                    if not has_bullet_penetration:
-                        bullets.remove(bullet)
+            if green_enemy_mode:
+                for enemy in green_enemies:
+                    enemy_center = (enemy[0] + 15, enemy[1] + 15)
+                    bullet_center = (bullet[0], bullet[2])
+                    distance = math.sqrt(
+                        (bullet_center[0] - enemy_center[0]) ** 2 + (bullet_center[1] - enemy_center[1]) ** 2)
+                    if distance < 21:
+                        green_enemies.remove(enemy)
+                        score += score_increment
+                        green_enemies_killed += 1
+                        total_green_enemies_killed += 1
+                        if not has_bullet_penetration:
+                            bullets.remove(bullet)
+            elif yellow_enemy_mode:
+                for enemy in yellow_enemies:
+                    enemy_center = (enemy[0] + 15, enemy[1] + 15)
+                    bullet_center = (bullet[0], bullet[2])
+                    distance = math.sqrt(
+                        (bullet_center[0] - enemy_center[0]) ** 2 + (bullet_center[1] - enemy_center[1]) ** 2)
+                    if distance < 18:
+                        yellow_enemies.remove(enemy)
+                        score += score_increment
+                        yellow_enemies_killed += 1
+                        total_yellow_enemies_killed += 1
+                        if not has_bullet_penetration:
+                            bullets.remove(bullet)
 
         if not game_over and not paused and not upgrade_menu_active:
             keys = pygame.key.get_pressed()
@@ -506,24 +564,45 @@ while running:
             game_over = True
 
         spawn_delay -= 1
-        if spawn_delay <= 0:
-            spawn_enemy()
-            spawn_delay = enemy_spawn_delay
+        if green_enemy_mode:
+            if spawn_delay <= 0 and green_enemy_mode:
+                spawn_green_enemy()
+                spawn_delay = green_enemy_spawn_delay
+        elif yellow_enemy_mode:
+            if spawn_delay <= 0 and yellow_enemy_mode:
+                spawn_yellow_enemy()
+                spawn_delay = yellow_enemy_spawn_delay
 
-        if len(green_enemies) == 0 and enemy_spawn_delay >= 20:
-            enemy_spawn_delay -= 3
-            spawn_enemy()
+        if len(green_enemies) == 0 and green_enemy_spawn_delay >= 20 and green_enemy_mode:
+            green_enemy_spawn_delay-= 3
+            spawn_green_enemy()
+            score_increment += 0.1
+        elif len(yellow_enemies) == 0 and yellow_enemy_spawn_delay >= 20 and yellow_enemy_mode:
+            yellow_enemy_spawn_delay -= 3
+            spawn_yellow_enemy()
             score_increment += 0.1
 
-        if green_enemies_killed >= green_enemies_killed_threshold:
-            green_enemies_killed_threshold += 1
-            green_enemies_killed = 0
-            coin_count += 1
+        if green_enemy_mode:
+            if green_enemies_killed >= green_enemies_killed_threshold:
+                green_enemies_killed_threshold += 1
+                green_enemies_killed = 0
+                coin_count += 1
+        elif yellow_enemy_mode:
+            if yellow_enemies_killed >= yellow_enemies_killed_threshold:
+                yellow_enemies_killed_threshold += 1
+                yellow_enemies_killed = 0
+                coin_count += 1
 
-        for enemy in green_enemies:
-            if player_x < enemy[0] + 30 and player_x + player_size > enemy[0] and player_y < enemy[1] + 30 and player_y + player_size > enemy[1]:
-                player_health -= green_enemy_damage
-                green_enemies.remove(enemy)
+        if green_enemy_mode:
+            for enemy in green_enemies:
+                if player_x < enemy[0] + 30 and player_x + player_size > enemy[0] and player_y < enemy[1] + 30 and player_y + player_size > enemy[1]:
+                    player_health -= green_enemy_damage
+                    green_enemies.remove(enemy)
+        elif yellow_enemy_mode:
+            for enemy in yellow_enemies:
+                if player_x < enemy[0] + 30 and player_x + player_size > enemy[0] and player_y < enemy[1] + 30 and player_y + player_size > enemy[1]:
+                    player_health -= yellow_enemy_damage
+                    yellow_enemies.remove(enemy)
 
         if player_health < original_player_health and health_regen_delay <= 0:
             player_health += 10
@@ -625,6 +704,10 @@ while running:
 
     screen.blit(coin_text, coin_rect)
     display_score(int(score))
+
+    if total_green_enemies_killed > 400:
+        yellow_enemy_mode = True
+        green_enemy_mode = False
 
     bullet_delay -= 1
     health_regen_delay -= 1
