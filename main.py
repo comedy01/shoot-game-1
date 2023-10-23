@@ -26,8 +26,9 @@ health_regen_delay = original_regen_delay
 health_regen_upgrades = 6
 health_regen_upgrade_cost = 1
 
-original_bullet_delay = 18
+original_bullet_delay = 24
 bullet_delay = original_bullet_delay
+specialization_delay = 0
 
 green_enemy_speed = 100
 yellow_enemy_speed = 120
@@ -77,7 +78,7 @@ spawn_delay = 0
 
 green_enemies_killed = 0
 green_enemies_killed_threshold = 7
-total_green_enemies_killed = 0
+total_green_enemies_killed = 145
 total_yellow_enemies_killed = 0
 yellow_enemies_killed = 0
 yellow_enemies_killed_threshold = 7
@@ -121,6 +122,10 @@ font_position = (10, 10)
 pause_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  48)
 pause_text = pause_font.render("Paused", True, BLACK)
 pause_rect = pause_text.get_rect(center=(screen_width // 2, 25))
+
+specialization_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
+specialization_text = specialization_font.render("You can now choose a specialization", True, BLACK)
+specialization_rect = specialization_text.get_rect(center=(screen_width // 2, 60))
 
 back_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  32)
 back_button_text = pause_font.render("Back", True, BLACK)
@@ -372,7 +377,7 @@ while running:
             elif rate_of_fire_button_rect.collidepoint(event.pos):
                 if fire_upgrades > 0 and coin_count >= fire_upgrade_cost:
                     coin_count -= fire_upgrade_cost
-                    original_bullet_delay -= 1
+                    original_bullet_delay -= 2
                     fire_upgrades -= 1
                     rate_of_fire_button_text = rate_of_fire_button_font.render(f"Fire rate ({fire_upgrade_cost} coins), {fire_upgrades} left", True, RED)
 
@@ -748,6 +753,9 @@ while running:
 
     if not paused and not game_over:
         draw_player_health_bar()
+
+    if total_green_enemies_killed > 150 and not has_made_decision:
+        screen.blit(specialization_text, specialization_rect)
 
     if paused:
         keys = pygame.key.get_pressed()
