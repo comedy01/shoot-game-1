@@ -29,10 +29,12 @@ health_regen_upgrade_cost = 1
 original_bullet_delay = 24
 bullet_delay = original_bullet_delay
 specialization_delay = 0
+original_auto_spawnrate_increase = 1300
+auto_spawnrate_increase = original_auto_spawnrate_increase
 
 green_enemy_speed = 100
 yellow_enemy_speed = 135
-green_enemy_spawn_delay = 80
+green_enemy_spawn_delay = 55
 yellow_enemy_spawn_delay = 50
 enemy_spawn_distance = 250
 
@@ -738,11 +740,11 @@ while running:
                 spawn_delay = yellow_enemy_spawn_delay
 
         if len(green_enemies) == 0 and green_enemy_spawn_delay >= 20 and green_enemy_mode:
-            green_enemy_spawn_delay-= 3
+            green_enemy_spawn_delay -= 5
             spawn_green_enemy()
             score_increment += 0.1
         elif len(yellow_enemies) == 0 and yellow_enemy_spawn_delay >= 20 and yellow_enemy_mode:
-            yellow_enemy_spawn_delay -= 3
+            yellow_enemy_spawn_delay -= 5
             spawn_yellow_enemy()
             score_increment += 0.1
 
@@ -772,6 +774,23 @@ while running:
             player_health += 10
             health_regen_delay = original_regen_delay
 
+        if auto_spawnrate_increase <= 0:
+            if green_enemy_mode:
+                if green_enemy_spawn_delay <= 25:
+                    green_enemy_spawn_delay -= 2
+                    auto_spawnrate_increase = original_auto_spawnrate_increase
+                else:
+                    green_enemy_spawn_delay -= 5
+                    auto_spawnrate_increase = original_auto_spawnrate_increase
+                print("spawn rate increased")
+            if yellow_enemy_mode:
+                if yellow_enemy_spawn_delay <= 25:
+                    yellow_enemy_spawn_delay -= 2
+                    auto_spawnrate_increase = original_auto_spawnrate_increase
+                else:
+                    yellow_enemy_spawn_delay -= 5
+                    auto_spawnrate_increase = original_auto_spawnrate_increase
+
     else:
         blit_screen()
 
@@ -792,8 +811,6 @@ while running:
         screen.blit(specialization_text, specialization_rect)
     elif total_green_enemies_killed >= 400 and not has_made_second_decision:
         screen.blit(specialization_text, specialization_rect)
-    elif total_yellow_enemies_killed >= 150 and not has_made_third_decision:
-        screen.blit(specialization_text, specialization_rect)
 
     if paused:
         keys = pygame.key.get_pressed()
@@ -812,7 +829,9 @@ while running:
         yellow_enemy_mode = True
         green_enemy_mode = False
 
-    print(total_yellow_enemies_killed)
+    print(green_enemy_spawn_delay)
+
+    auto_spawnrate_increase -= 1
     bullet_delay -= 1
     health_regen_delay -= 1
     pygame.display.update()
