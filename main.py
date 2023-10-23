@@ -66,6 +66,7 @@ game_over = False
 selected_cell = None
 has_made_decision = False
 has_chosen_dual_shoot = False
+has_chosen_twin_shoot = False
 has_bullet_penetration = False
 green_enemy_mode = True
 yellow_enemy_mode = False
@@ -156,9 +157,9 @@ turret_gunner_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
 turret_gunner_text = turret_gunner_font.render(f"Turret gunner", True, RED)
 turret_gunner_rect = turret_gunner_text.get_rect(center=(screen_width // 2, 500))
 
-mini_gunner_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
-mini_gunner_text = mini_gunner_font.render(f"Turret gunner", True, RED)
-mini_gunner_rect = mini_gunner_text.get_rect(center=(screen_width // 2, 530))
+twin_shooter_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
+twin_shooter_text = twin_shooter_font.render(f"Twin Shooter", True, RED)
+twin_shooter_rect = twin_shooter_text.get_rect(center=(screen_width // 2, 530))
 
 turret_fire_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
@@ -347,12 +348,7 @@ while running:
                 paused = True
 
             elif upgrades_button_rect.collidepoint(event.pos) and has_made_decision:
-                if has_chosen_turrets:
-                    upgrade_menu_active = True
-                elif has_chosen_dual_shoot:
-                    upgrade_menu_active = True
-                elif has_chosen_quad_shoot:
-                    upgrade_menu_active = True
+                upgrade_menu_active = True
 
         if event.type == pygame.MOUSEBUTTONDOWN and upgrade_menu_active:
             if resume_button_rect.collidepoint(event.pos):
@@ -379,6 +375,12 @@ while running:
                 upgrade_menu_active = True
                 has_made_decision = True
                 has_chosen_dual_shoot = True
+                original_bullet_delay += 3
+
+            elif twin_shooter_rect.collidepoint(event.pos) and not has_made_decision and total_green_enemies_killed > 150:
+                upgrade_menu_active = True
+                has_made_decision = True
+                has_chosen_twin_shoot = True
                 original_bullet_delay += 3
 
             elif quad_shoot_button_rect.collidepoint(event.pos) and has_chosen_dual_shoot and total_green_enemies_killed > 400:
@@ -439,6 +441,10 @@ while running:
             bullets.append([player_x + player_size // 2, angle + 90, player_y + player_size // 2])
             bullets.append([player_x + player_size // 2, angle + 180, player_y + player_size // 2])
             bullets.append([player_x + player_size // 2, angle + 270, player_y + player_size // 2])
+        elif has_chosen_twin_shoot:
+            bullets.append([player_x + player_size // 2 - 15, angle -5, player_y + player_size // 2])
+            bullets.append([player_x + player_size // 2 + 15, angle +5, player_y + player_size // 2])
+
         else:
             bullets.append([player_x + player_size // 2, angle, player_y + player_size // 2])
         bullet_delay = original_bullet_delay
@@ -615,21 +621,23 @@ while running:
             screen.blit(resume_button_text, resume_button_rect)
             screen.blit(upgrades_button_text, upgrades_button_rect)
 
-        elif upgrade_menu_active and not has_made_decision and total_green_enemies_killed < 150:
+        elif upgrade_menu_active and not has_made_decision and total_green_enemies_killed <= 150:
             screen.fill((255, 255, 255))
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
             screen.blit(pause_text, pause_rect)
 
-        elif upgrade_menu_active and not has_made_decision and total_green_enemies_killed > 150:
+        elif upgrade_menu_active and not has_made_decision and total_green_enemies_killed >= 150:
             screen.fill((255, 255, 255))
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
             screen.blit(pause_text, pause_rect)
             if not has_chosen_dual_shoot and not has_chosen_quad_shoot:
                 screen.blit(dual_shoot_button_text, dual_shoot_button_rect)
-            elif not has_chosen_turrets:
+            if not has_chosen_turrets:
                 screen.blit(turret_gunner_text, turret_gunner_rect)
+            if not has_chosen_twin_shoot:
+                screen.blit(twin_shooter_text, twin_shooter_rect)
             screen.blit(turret_gunner_text, turret_gunner_rect)
 
         elif has_chosen_turrets and upgrade_menu_active:
@@ -640,13 +648,25 @@ while running:
             screen.blit(turret_placement_mode_text, turret_placement_mode_rect)
             screen.blit(turret_fire_button_text, turret_fire_button_rect)
 
-        elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed < 400:
+        elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed <= 400:
             screen.fill((255, 255, 255))
             screen.blit(pause_text, pause_rect)
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
 
-        elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed > 400:
+        elif has_chosen_twin_shoot and upgrade_menu_active and total_green_enemies_killed <= 400:
+            screen.fill((255, 255, 255))
+            screen.blit(pause_text, pause_rect)
+            screen.blit(back_button_text, back_button_rect)
+            screen.blit(resume_button_text, resume_button_rect)
+
+        elif has_chosen_twin_shoot and upgrade_menu_active and total_green_enemies_killed >= 400:
+            screen.fill((255, 255, 255))
+            screen.blit(pause_text, pause_rect)
+            screen.blit(back_button_text, back_button_rect)
+            screen.blit(resume_button_text, resume_button_rect)
+
+        elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed >= 400:
             screen.fill((255, 255, 255))
             screen.blit(pause_text, pause_rect)
             screen.blit(back_button_text, back_button_rect)
