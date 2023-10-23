@@ -26,7 +26,7 @@ health_regen_delay = original_regen_delay
 health_regen_upgrades = 6
 health_regen_upgrade_cost = 1
 
-original_bullet_delay = 16
+original_bullet_delay = 18
 bullet_delay = original_bullet_delay
 
 green_enemy_speed = 100
@@ -49,7 +49,6 @@ turret_fire_cost = 1
 turret_fire_upgrades = 6
 turret_placement_mode = False
 has_turret = False
-has_chosen_turrets = False
 
 bullet_penetration_cost = 5
 
@@ -65,8 +64,10 @@ running = True
 game_over = False
 selected_cell = None
 has_made_decision = False
+has_chosen_turrets = False
 has_chosen_dual_shoot = False
 has_chosen_twin_shoot = False
+has_chosen_double_twin_shoot = False
 has_bullet_penetration = False
 green_enemy_mode = True
 yellow_enemy_mode = False
@@ -76,7 +77,7 @@ spawn_delay = 0
 
 green_enemies_killed = 0
 green_enemies_killed_threshold = 7
-total_green_enemies_killed = 0
+total_green_enemies_killed = 400
 total_yellow_enemies_killed = 0
 yellow_enemies_killed = 0
 yellow_enemies_killed_threshold = 7
@@ -160,6 +161,10 @@ turret_gunner_rect = turret_gunner_text.get_rect(center=(screen_width // 2, 500)
 twin_shooter_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
 twin_shooter_text = twin_shooter_font.render(f"Twin Shooter", True, RED)
 twin_shooter_rect = twin_shooter_text.get_rect(center=(screen_width // 2, 530))
+
+double_twin_shooter_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  30)
+double_twin_shooter_text = double_twin_shooter_font.render(f"Double Twin Shooter", True, RED)
+double_twin_shooter_rect = double_twin_shooter_text.get_rect(center=(screen_width // 2, 500))
 
 turret_fire_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 turret_fire_button_text = turret_fire_button_font.render(f"Turret fire rate ({turret_fire_cost} coins), {turret_fire_upgrades} left", True, RED)
@@ -367,27 +372,39 @@ while running:
             elif rate_of_fire_button_rect.collidepoint(event.pos):
                 if fire_upgrades > 0 and coin_count >= fire_upgrade_cost:
                     coin_count -= fire_upgrade_cost
-                    original_bullet_delay -= 0.6
+                    original_bullet_delay -= 1
                     fire_upgrades -= 1
                     rate_of_fire_button_text = rate_of_fire_button_font.render(f"Fire rate ({fire_upgrade_cost} coins), {fire_upgrades} left", True, RED)
 
-            elif dual_shoot_button_rect.collidepoint(event.pos) and not has_made_decision and total_green_enemies_killed > 150:
+            elif dual_shoot_button_rect.collidepoint(event.pos) and not has_made_decision and total_green_enemies_killed >= 150:
                 upgrade_menu_active = True
                 has_made_decision = True
                 has_chosen_dual_shoot = True
-                original_bullet_delay += 3
+                original_bullet_delay += 5
 
-            elif twin_shooter_rect.collidepoint(event.pos) and not has_made_decision and total_green_enemies_killed > 150:
+            elif twin_shooter_rect.collidepoint(event.pos) and not has_made_decision and total_green_enemies_killed >= 150:
                 upgrade_menu_active = True
                 has_made_decision = True
                 has_chosen_twin_shoot = True
-                original_bullet_delay += 3
+                original_bullet_delay += 5
 
-            elif quad_shoot_button_rect.collidepoint(event.pos) and has_chosen_dual_shoot and total_green_enemies_killed > 400:
+            elif quad_shoot_button_rect.collidepoint(event.pos) and has_chosen_dual_shoot and total_green_enemies_killed >= 400:
                 upgrade_menu_active = True
                 has_chosen_quad_shoot = True
                 has_chosen_dual_shoot = False
-                original_bullet_delay += 2
+                original_bullet_delay += 3
+
+            elif double_twin_shooter_rect.collidepoint(event.pos) and has_chosen_dual_shoot and total_green_enemies_killed >= 400:
+                upgrade_menu_active = True
+                has_chosen_double_twin_shoot = True
+                has_chosen_dual_shoot = False
+                original_bullet_delay += 3
+
+            elif double_twin_shooter_rect.collidepoint(event.pos) and has_chosen_twin_shoot and total_green_enemies_killed >= 400:
+                upgrade_menu_active = True
+                has_chosen_double_twin_shoot = True
+                has_chosen_twin_shoot = False
+                original_bullet_delay += 3
 
             elif bullet_speed_rect.collidepoint(event.pos) and coin_count >= bullet_speed_cost and bullet_speed_upgrades > 0:
                 coin_count -= bullet_speed_cost
@@ -442,8 +459,20 @@ while running:
             bullets.append([player_x + player_size // 2, angle + 180, player_y + player_size // 2])
             bullets.append([player_x + player_size // 2, angle + 270, player_y + player_size // 2])
         elif has_chosen_twin_shoot:
-            bullets.append([player_x + player_size // 2 - 15, angle -5, player_y + player_size // 2])
-            bullets.append([player_x + player_size // 2 + 15, angle +5, player_y + player_size // 2])
+            angle -= 8
+            bullets.append([player_x + player_size // 2, angle, player_y + player_size // 2])
+            angle += 16
+            bullets.append([player_x + player_size // 2, angle, player_y + player_size // 2])
+
+        elif has_chosen_double_twin_shoot:
+            angle -= 8
+            bullets.append([player_x + player_size // 2, angle, player_y + player_size // 2])
+            angle += 16
+            bullets.append([player_x + player_size // 2, angle, player_y + player_size // 2])
+            angle += 172
+            bullets.append([player_x + player_size // 2, angle, player_y + player_size // 2])
+            angle -= 16
+            bullets.append([player_x + player_size // 2, angle, player_y + player_size // 2])
 
         else:
             bullets.append([player_x + player_size // 2, angle, player_y + player_size // 2])
@@ -648,13 +677,13 @@ while running:
             screen.blit(turret_placement_mode_text, turret_placement_mode_rect)
             screen.blit(turret_fire_button_text, turret_fire_button_rect)
 
-        elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed <= 400:
+        elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed < 400:
             screen.fill((255, 255, 255))
             screen.blit(pause_text, pause_rect)
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
 
-        elif has_chosen_twin_shoot and upgrade_menu_active and total_green_enemies_killed <= 400:
+        elif has_chosen_twin_shoot and upgrade_menu_active and total_green_enemies_killed < 400:
             screen.fill((255, 255, 255))
             screen.blit(pause_text, pause_rect)
             screen.blit(back_button_text, back_button_rect)
@@ -665,6 +694,7 @@ while running:
             screen.blit(pause_text, pause_rect)
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
+            screen.blit(double_twin_shooter_text, double_twin_shooter_rect)
 
         elif has_chosen_dual_shoot and upgrade_menu_active and total_green_enemies_killed >= 400:
             screen.fill((255, 255, 255))
@@ -672,8 +702,15 @@ while running:
             screen.blit(back_button_text, back_button_rect)
             screen.blit(resume_button_text, resume_button_rect)
             screen.blit(quad_shoot_button_text, quad_shoot_button_rect)
+            screen.blit(double_twin_shooter_text, double_twin_shooter_rect)
 
         elif has_chosen_quad_shoot and upgrade_menu_active:
+            screen.fill((255, 255, 255))
+            screen.blit(pause_text, pause_rect)
+            screen.blit(back_button_text, back_button_rect)
+            screen.blit(resume_button_text, resume_button_rect)
+
+        elif has_chosen_double_twin_shoot and upgrade_menu_active:
             screen.fill((255, 255, 255))
             screen.blit(pause_text, pause_rect)
             screen.blit(back_button_text, back_button_rect)
