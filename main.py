@@ -78,7 +78,7 @@ spawn_delay = 0
 
 green_enemies_killed = 0
 green_enemies_killed_threshold = 7
-total_green_enemies_killed = 145
+total_green_enemies_killed = 0
 total_yellow_enemies_killed = 0
 yellow_enemies_killed = 0
 yellow_enemies_killed_threshold = 7
