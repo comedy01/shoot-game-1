@@ -31,7 +31,7 @@ bullet_delay = original_bullet_delay
 specialization_delay = 0
 
 green_enemy_speed = 100
-yellow_enemy_speed = 120
+yellow_enemy_speed = 135
 green_enemy_spawn_delay= 80
 yellow_enemy_spawn_delay = 50
 enemy_spawn_distance = 250
@@ -65,6 +65,7 @@ running = True
 game_over = False
 selected_cell = None
 has_made_decision = False
+has_made_second_decision = False
 has_chosen_turrets = False
 has_chosen_dual_shoot = False
 has_chosen_twin_shoot = False
@@ -81,7 +82,7 @@ green_enemies_killed_threshold = 7
 total_green_enemies_killed = 0
 total_yellow_enemies_killed = 0
 yellow_enemies_killed = 0
-yellow_enemies_killed_threshold = 7
+yellow_enemies_killed_threshold = 14
 
 score = 0
 score_increment = 1
@@ -125,7 +126,7 @@ pause_rect = pause_text.get_rect(center=(screen_width // 2, 25))
 
 specialization_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  25)
 specialization_text = specialization_font.render("You can now choose a specialization", True, BLACK)
-specialization_rect = specialization_text.get_rect(center=(screen_width // 2, 60))
+specialization_rect = specialization_text.get_rect(center=(screen_width // 2, 70))
 
 back_button_font = pygame.font.Font('Assets/Montserrat-Bold.ttf',  32)
 back_button_text = pause_font.render("Back", True, BLACK)
@@ -398,18 +399,21 @@ while running:
                 has_chosen_quad_shoot = True
                 has_chosen_dual_shoot = False
                 original_bullet_delay += 3
+                has_made_second_decision = True
 
             elif double_twin_shooter_rect.collidepoint(event.pos) and has_chosen_dual_shoot and total_green_enemies_killed >= 400:
                 upgrade_menu_active = True
                 has_chosen_double_twin_shoot = True
                 has_chosen_dual_shoot = False
                 original_bullet_delay += 3
+                has_made_second_decision = True
 
             elif double_twin_shooter_rect.collidepoint(event.pos) and has_chosen_twin_shoot and total_green_enemies_killed >= 400:
                 upgrade_menu_active = True
                 has_chosen_double_twin_shoot = True
                 has_chosen_twin_shoot = False
                 original_bullet_delay += 3
+                has_made_second_decision = True
 
             elif bullet_speed_rect.collidepoint(event.pos) and coin_count >= bullet_speed_cost and bullet_speed_upgrades > 0:
                 coin_count -= bullet_speed_cost
@@ -754,7 +758,9 @@ while running:
     if not paused and not game_over:
         draw_player_health_bar()
 
-    if total_green_enemies_killed > 150 and not has_made_decision:
+    if total_green_enemies_killed >= 150 and not has_made_decision:
+        screen.blit(specialization_text, specialization_rect)
+    elif total_green_enemies_killed >= 400 and not has_made_second_decision:
         screen.blit(specialization_text, specialization_rect)
 
     if paused:
@@ -774,6 +780,7 @@ while running:
         yellow_enemy_mode = True
         green_enemy_mode = False
 
+    print(total_yellow_enemies_killed)
     bullet_delay -= 1
     health_regen_delay -= 1
     pygame.display.update()
