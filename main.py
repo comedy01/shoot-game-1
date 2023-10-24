@@ -689,7 +689,9 @@ while running:
                         green_enemies_killed += 1
                         total_green_enemies_killed += 1
                         if not has_bullet_penetration:
-                            bullets.remove(bullet)
+                            if bullet in bullets:
+                                bullets.remove(bullet)
+
             elif yellow_enemy_mode:
                 for enemy in yellow_enemies:
                     enemy_center = (enemy[0] + 15, enemy[1] + 15)
@@ -702,9 +704,10 @@ while running:
                         yellow_enemies_killed += 1
                         total_yellow_enemies_killed += 1
                         if not has_bullet_penetration:
-                            bullets.remove(bullet)
+                            if bullet in bullets:
+                                bullets.remove(bullet)
 
-        if not game_over and not paused and not upgrade_menu_active:
+        if not game_over and not paused:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_w]:
                 player_y -= player_speed * dt
