@@ -5,7 +5,7 @@ import os
 
 pygame.init()
 
-screen_width, screen_height = 800, 800
+screen_width, screen_height = 1920, 1080
 
 while True:
     player_size = 27
@@ -32,8 +32,8 @@ while True:
     original_bullet_delay = 24
     bullet_delay = original_bullet_delay
     specialization_delay = 0
-    original_auto_spawnrate_increase = 1300
-    auto_spawnrate_increase = original_auto_spawnrate_increase
+    original_auto_spawn_rate_increase = 1300
+    auto_spawn_rate_increase = original_auto_spawn_rate_increase
 
     green_enemy_speed = 100
     yellow_enemy_speed = 135
@@ -80,6 +80,7 @@ while True:
     has_bullet_penetration = False
     green_enemy_mode = True
     yellow_enemy_mode = False
+    bullet_did_hit = False
 
     angle = 0
     spawn_delay = 0
@@ -236,7 +237,6 @@ while True:
             screen.blit(dual_shoot_button_text, dual_shoot_button_rect)
             screen.blit(turret_gunner_text, turret_gunner_rect)
             screen.blit(twin_shooter_text, twin_shooter_rect)
-            screen.blit(turret_gunner_text, turret_gunner_rect)
 
         elif has_chosen_turrets and upgrade_menu_active:
             screen.fill((255, 255, 255))
@@ -349,6 +349,11 @@ while True:
                 angle = math.degrees(math.atan2(dy, dx))
                 bullets.append([self.col * cell_size + cell_size // 2, angle, self.row * cell_size + cell_size // 2])
                 self.shoot_delay = turret_fire_delay
+
+
+    def check_for_game_over():
+        if player_health <= 0:
+            return True
 
 
     def calculate_distance(point1, point2):
@@ -717,8 +722,7 @@ while True:
                             green_enemies_killed += 1
                             total_green_enemies_killed += 1
                             if not has_bullet_penetration:
-                                if bullet in bullets:
-                                    bullets.remove(bullet)
+                                bullet_did_hit = True
 
                 elif yellow_enemy_mode:
                     for enemy in yellow_enemies:
@@ -732,8 +736,11 @@ while True:
                             yellow_enemies_killed += 1
                             total_yellow_enemies_killed += 1
                             if not has_bullet_penetration:
-                                if bullet in bullets:
-                                    bullets.remove(bullet)
+                                bullet_did_hit = True
+
+                if bullet_did_hit:
+                    bullets.remove(bullet)
+                    bullet_did_hit = False
 
             if not game_over and not paused:
                 keys = pygame.key.get_pressed()
@@ -759,7 +766,7 @@ while True:
                 if keys[pygame.K_r]:
                     running = False
 
-            if player_health <= 0:
+            if check_for_game_over():
                 game_over = True
 
             spawn_delay -= 1
@@ -795,13 +802,13 @@ while True:
             if green_enemy_mode:
                 for enemy in green_enemies:
                     if player_x < enemy[0] + 30 and player_x + player_size > enemy[0] and player_y < enemy[
-                        1] + 30 and player_y + player_size > enemy[1]:
+                                1] + 30 and player_y + player_size > enemy[1]:
                         player_health -= green_enemy_damage
                         green_enemies.remove(enemy)
             elif yellow_enemy_mode:
                 for enemy in yellow_enemies:
                     if player_x < enemy[0] + 30 and player_x + player_size > enemy[0] and player_y < enemy[
-                        1] + 30 and player_y + player_size > enemy[1]:
+                                1] + 30 and player_y + player_size > enemy[1]:
                         player_health -= yellow_enemy_damage
                         yellow_enemies.remove(enemy)
 
@@ -809,22 +816,21 @@ while True:
                 player_health += 10
                 health_regen_delay = original_regen_delay
 
-            if auto_spawnrate_increase <= 0:
+            if auto_spawn_rate_increase <= 0:
                 if green_enemy_mode:
                     if green_enemy_spawn_delay <= 25:
                         green_enemy_spawn_delay -= 2
-                        auto_spawnrate_increase = original_auto_spawnrate_increase
+                        auto_spawn_rate_increase = original_auto_spawn_rate_increase
                     else:
                         green_enemy_spawn_delay -= 5
-                        auto_spawnrate_increase = original_auto_spawnrate_increase
-                    print("spawn rate increased")
+                        auto_spawn_rate_increase = original_auto_spawn_rate_increase
                 if yellow_enemy_mode:
                     if yellow_enemy_spawn_delay <= 25:
                         yellow_enemy_spawn_delay -= 2
-                        auto_spawnrate_increase = original_auto_spawnrate_increase
+                        auto_spawn_rate_increase = original_auto_spawn_rate_increase
                     else:
                         yellow_enemy_spawn_delay -= 5
-                        auto_spawnrate_increase = original_auto_spawnrate_increase
+                        auto_spawn_rate_increase = original_auto_spawn_rate_increase
 
         else:
             blit_screen()
