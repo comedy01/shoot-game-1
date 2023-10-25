@@ -24,7 +24,7 @@ while True:
     player_health = original_player_health
     health_upgrades = 6
     health_upgrade_cost = 1
-    original_regen_delay = 1000
+    original_regen_delay = 800
     health_regen_delay = original_regen_delay
     health_regen_upgrades = 6
     health_regen_upgrade_cost = 1
@@ -508,7 +508,6 @@ while True:
                     upgrade_menu_active = True
                     has_made_decision = True
                     has_chosen_dual_shoot = True
-                    original_bullet_delay += 5
 
                 elif twin_shooter_rect.collidepoint(
                         event.pos) and not has_made_decision and total_green_enemies_killed >= 150:
@@ -522,7 +521,6 @@ while True:
                     upgrade_menu_active = True
                     has_chosen_quad_shoot = True
                     has_chosen_dual_shoot = False
-                    original_bullet_delay += 3
                     has_made_second_decision = True
 
                 elif double_twin_shooter_rect.collidepoint(
@@ -530,7 +528,6 @@ while True:
                     upgrade_menu_active = True
                     has_chosen_double_twin_shoot = True
                     has_chosen_dual_shoot = False
-                    original_bullet_delay += 3
                     has_made_second_decision = True
 
                 elif triple_shooter_rect.collidepoint(
@@ -833,6 +830,10 @@ while True:
             blit_screen()
 
         if game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    wants_to_quit = True
+                    running = False
             screen.fill(WHITE)
             text = font.render(f"Game Over", True, BLACK)
             text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2))
