@@ -584,13 +584,14 @@ while True:
                         f"Health Regen ({health_regen_upgrade_cost} coins), {health_regen_upgrades} left", True, RED)
 
                 elif bullet_penetration_rect.collidepoint(
-                        event.pos) and coin_count >= bullet_penetration_cost and has_bullet_penetration == False:
+                        event.pos) and coin_count >= bullet_penetration_cost and not has_bullet_penetration:
                     coin_count -= bullet_penetration_cost
                     has_bullet_penetration = True
                     bullet_penetration_text = bullet_penetration_font.render(
                         f"Bullet penetration ({bullet_penetration_cost} coins), 0 left", True, RED)
 
-            if event.type == pygame.MOUSEBUTTONDOWN and turret_placement_mode and has_chosen_turrets and upgrade_menu_active:
+            if (event.type == pygame.MOUSEBUTTONDOWN and turret_placement_mode and has_chosen_turrets and
+                    upgrade_menu_active):
                 if not turret_placement_mode_rect.collidepoint(event.pos):
                     row = event.pos[1] // cell_size
                     col = event.pos[0] // cell_size
