@@ -1,2 +1,4 @@
-laketrout u better dm me within the hour
-_comedy.
+ESC for the menu,
+SPACE to shoot,
+WASD to move,
+mouse to aim
